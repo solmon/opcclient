@@ -1,0 +1,17 @@
+{
+  "name": "opcclient-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "packages/nodejs"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=packages/nodejs",
+    "test": "npm run test --workspace=packages/nodejs",
+    "lint": "npm run lint --workspace=packages/nodejs",
+    "format": "npm run format --workspace=packages/nodejs"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0"
+  }
+}

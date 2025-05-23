@@ -1,11 +1,11 @@
-# OPC Client
+# OPC Client (Python)
 
 A Python client for OPC (OLE for Process Control) communication.
 
 ## Installation
 
 ```bash
-uv pip install -e .
+uv pip install --no-verify-ssl -e .
 ```
 
 ## Usage

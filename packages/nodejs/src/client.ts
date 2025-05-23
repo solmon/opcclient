@@ -7,7 +7,9 @@ import {
   MonitoringParametersOptions,
   OPCUAClient,
   TimestampsToReturn,
-  Variant
+  Variant,
+  UserIdentityInfo,
+  UserTokenType
 } from 'node-opcua';
 
 export interface OPCClientOptions {
@@ -72,9 +74,14 @@ export class OPCClient {
     try {
       await this.client.connect(this.endpointUrl);
       
-      const userIdentity = username && password 
-        ? { userName: username, password } 
-        : null;
+      let userIdentity: UserIdentityInfo | undefined = undefined;
+      if (username && password) {
+        userIdentity = {
+          type: UserTokenType.UserName,
+          userName: username,
+          password: password
+        };
+      }
       
       this.session = await this.client.createSession(userIdentity);
       this.connected = true;

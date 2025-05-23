@@ -2,7 +2,7 @@ from opcclient import OPCClient
 
 def main():
     # Create a client
-    client = OPCClient(server_url="opc.tcp://localhost:4840")
+    client = OPCClient(server_url="opc.tcp://localhost:4841")
 
     try:
         # Connect to the server

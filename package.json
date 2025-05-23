@@ -6,10 +6,15 @@
     "packages/nodejs"
   ],
   "scripts": {
-    "build": "npm run build --workspace=packages/nodejs",
-    "test": "npm run test --workspace=packages/nodejs",
-    "lint": "npm run lint --workspace=packages/nodejs",
-    "format": "npm run format --workspace=packages/nodejs"
+    "build": "pnpm run build --filter=opcclient",
+    "test": "pnpm run test --filter=opcclient",
+    "lint": "pnpm run lint --filter=opcclient",
+    "format": "pnpm run format --filter=opcclient",
+    "setup": "pnpm install && python3 -m venv .venv && . .venv/bin/activate && pip install --no-verify-ssl -e ./packages/python && deactivate",
+    "example:nodejs": "./run-examples.sh nodejs",
+    "example:python": "./run-examples.sh python",
+    "example:all": "./run-examples.sh all",
+    "examples": "./run-examples.sh"
   },
   "devDependencies": {
     "prettier": "^3.0.0"

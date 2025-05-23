@@ -2,6 +2,20 @@
 
 This repository contains client libraries for OPC (OLE for Process Control) communication in multiple languages.
 
+## Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/solmon/opcclient.git
+cd opcclient
+
+# Set up the workspace (installs all dependencies)
+pnpm run setup
+
+# Run examples
+./run-examples.sh
+```
+
 ## Packages
 
 ### Python OPC Client
@@ -30,7 +44,8 @@ A Node.js client for OPC communication.
 
 ```bash
 # Installation
-npm install --prefix ./packages/nodejs
+pnpm install --filter opcclient
+pnpm run build --filter opcclient
 
 # Usage
 import { OPCClient } from 'opcclient';
@@ -49,6 +64,24 @@ await client.connect();
 - [Python examples](./examples/python/)
 - [Node.js examples](./examples/nodejs/)
 
+You can run the examples using the provided script:
+
+```bash
+# Run the interactive menu
+./run-examples.sh
+
+# Or run specific examples directly
+./run-examples.sh python    # Run the Python example
+./run-examples.sh nodejs    # Run the Node.js example
+./run-examples.sh all       # Run both examples
+
+# You can also use npm/pnpm scripts
+pnpm run example:python
+pnpm run example:nodejs
+pnpm run example:all
+pnpm run examples           # Interactive menu
+```
+
 ## Development
 
 ### Python Client
@@ -64,9 +97,9 @@ pytest
 
 ```bash
 cd packages/nodejs
-npm install
-npm run build
-npm test
+pnpm install
+pnpm run build
+pnpm test
 ```
 
 ## License

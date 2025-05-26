@@ -9,6 +9,7 @@ import { OPCServerManager } from '@/lib/opc-server-manager'
 import { ServerConnectionForm } from '@/components/server-connection-form'
 import { ServerCard } from '@/components/server-card'
 import { ObjectModelTree } from '@/components/object-model-tree'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { Button } from '@/components/ui/button'
 
 export default function Home() {
@@ -90,13 +91,23 @@ export default function Home() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer 
+        position="top-right" 
+        autoClose={3000} 
+        theme="dark" 
+      />
       
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold">OPC Client Explorer</h1>
-        <p className="text-slate-600 mt-2">
-          Browse and connect to OPC servers to view their object models
-        </p>
+      <header className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold dark:text-white">OPC Client Explorer</h1>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">
+            Browse and connect to OPC servers to view their object models
+          </p>
+        </div>
+        <div className="flex items-center">
+          {/* Import the ThemeToggle component */}
+          <ThemeToggle />
+        </div>
       </header>
 
       <div className="mb-8">
@@ -116,8 +127,8 @@ export default function Home() {
           <h2 className="text-xl font-semibold mb-4">Server Connections</h2>
           
           {servers.length === 0 ? (
-            <div className="bg-slate-50 p-8 text-center rounded-lg border">
-              <p className="text-slate-500">No server connections added yet</p>
+            <div className="bg-slate-50 dark:bg-slate-900 p-8 text-center rounded-lg border dark:border-slate-700">
+              <p className="text-slate-500 dark:text-slate-400">No server connections added yet</p>
               <Button 
                 onClick={() => setIsFormOpen(true)}
                 className="mt-4"
@@ -147,8 +158,8 @@ export default function Home() {
               serverName={selectedModel.serverName}
             />
           ) : (
-            <div className="h-full bg-slate-50 p-8 text-center rounded-lg border">
-              <p className="text-slate-500">
+            <div className="h-full bg-slate-50 dark:bg-slate-900 p-8 text-center rounded-lg border dark:border-slate-700">
+              <p className="text-slate-500 dark:text-slate-400">
                 Select a server and click "View Object Model" to see the OPC server's objects
               </p>
             </div>

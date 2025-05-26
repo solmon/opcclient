@@ -4,9 +4,13 @@ This is a Next.js web application that provides a graphical interface to connect
 
 ## Features
 
-- Connect to OPC UA servers
-- View server object models in a tree view
+- Connect to OPC UA servers with username/password or anonymous authentication
+- View server object models in an interactive tree view
+- Search and filter nodes in the object model tree
+- Automatic dark/light theme support with manual toggle
 - Save and manage multiple server connections
+- Real-time connection status indicators
+- Responsive design optimized for all device sizes
 - User-friendly interface built with React and Tailwind CSS
 
 ## Getting Started

@@ -2,6 +2,7 @@ export interface Server {
   id: string
   name: string
   endpointUrl: string
+  useAnonymous?: boolean
   username?: string
   password?: string
 }

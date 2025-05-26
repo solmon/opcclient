@@ -20,7 +20,8 @@
     "dev": "cd packages/webapp && pnpm run dev",
     "webapp:dev": "cd packages/webapp && pnpm run dev",
     "webapp:build": "cd packages/webapp && pnpm run build",
-    "webapp:start": "cd packages/webapp && pnpm run start"
+    "webapp:start": "cd packages/webapp && pnpm run start",
+    "webapp:rebuild": "cd packages/webapp && pnpm install && pnpm run build"
   },
   "devDependencies": {
     "prettier": "^3.0.0"

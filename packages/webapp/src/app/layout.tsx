@@ -1,20 +1,7 @@
 import type { Metadata } from "next";
-import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 
-// Use Inter as a fallback for Geist Sans
-const inter = Inter({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-// Use Roboto Mono as a fallback for Geist Mono
-const robotoMono = Roboto_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
+// Using system fonts instead of Google Fonts to avoid SSL certificate issues
 
 export const metadata: Metadata = {
   title: "OPC Client Explorer",
@@ -27,9 +14,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark:bg-slate-950">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (prefersDark) {
+                  document.documentElement.classList.add('dark');
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
-        className={`${inter.variable} ${robotoMono.variable} antialiased`}
+        className="antialiased dark:bg-slate-950 font-sans"
       >
         {children}
       </body>

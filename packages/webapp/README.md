@@ -1,24 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OPC Client Web Application
+
+This is a Next.js web application that provides a graphical interface to connect to OPC UA servers and browse their object models. It's part of the OPC Client monorepo.
+
+## Features
+
+- Connect to OPC UA servers
+- View server object models in a tree view
+- Save and manage multiple server connections
+- User-friendly interface built with React and Tailwind CSS
 
 ## Getting Started
 
-First, run the development server:
+### From the Monorepo Root
+
+You can run the webapp from the monorepo root using:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Development server
+pnpm run webapp:dev
+
+# Build for production
+pnpm run webapp:build
+
+# Run production build
+pnpm run webapp:start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### From the Webapp Directory
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Alternatively, you can navigate to the webapp directory and run:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cd packages/webapp
+
+# Development server
+pnpm run dev
+
+# Build for production
+pnpm run build
+
+# Run production build
+pnpm run start
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
+
+## Integration with OPC Client
+
+This webapp uses the `opcclient` Node.js package from the monorepo to communicate with OPC UA servers. The integration is handled through the `OPCServerManager` class in `src/lib/opc-server-manager.ts`.
+
+## Security Considerations
+
+For production use, you should implement proper authentication and secure credential storage. The current implementation is for demonstration purposes only.
 
 ## Learn More
 

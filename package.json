@@ -17,10 +17,10 @@
     "example:python": "./run-examples.sh python",
     "example:all": "./run-examples.sh all",
     "examples": "./run-examples.sh",
-    "dev": "pnpm run dev --filter=webapp",
-    "webapp:dev": "pnpm run dev --filter=webapp",
-    "webapp:build": "pnpm run build --filter=webapp",
-    "webapp:start": "pnpm run start --filter=webapp"
+    "dev": "cd packages/webapp && pnpm run dev",
+    "webapp:dev": "cd packages/webapp && pnpm run dev",
+    "webapp:build": "cd packages/webapp && pnpm run build",
+    "webapp:start": "cd packages/webapp && pnpm run start"
   },
   "devDependencies": {
     "prettier": "^3.0.0"

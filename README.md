@@ -28,6 +28,41 @@ uv pip install --no-verify-ssl -e ./packages/python
 
 # Usage
 from opcclient import OPCClient
+```
+
+### Node.js OPC Client
+
+A Node.js client for OPC UA communication.
+
+```bash
+# Installation (if using outside the monorepo)
+npm install opcclient
+
+# Usage
+const { OPCClient } = require('opcclient');
+// or
+import { OPCClient } from 'opcclient';
+```
+
+### Web Application
+
+A Next.js web application for browsing OPC UA servers.
+
+```bash
+# Start the development server
+pnpm run webapp:dev
+
+# Build for production
+pnpm run webapp:build
+
+# Start the production server
+pnpm run webapp:start
+```
+
+The web application allows you to:
+- Connect to OPC UA servers
+- View server object models
+- Save and manage multiple server connections
 
 # Create a client
 client = OPCClient(server_url="opc.tcp://server:4840")

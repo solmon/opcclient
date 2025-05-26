@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "workspaces": [
-    "packages/nodejs"
+    "packages/nodejs",
+    "packages/webapp"
   ],
   "scripts": {
     "build": "pnpm run build --filter=opcclient",
+    "build:webapp": "pnpm run build --filter=webapp",
     "test": "pnpm run test --filter=opcclient",
     "lint": "pnpm run lint --filter=opcclient",
     "format": "pnpm run format --filter=opcclient",
@@ -14,7 +16,11 @@
     "example:nodejs": "./run-examples.sh nodejs",
     "example:python": "./run-examples.sh python",
     "example:all": "./run-examples.sh all",
-    "examples": "./run-examples.sh"
+    "examples": "./run-examples.sh",
+    "dev": "pnpm run dev --filter=webapp",
+    "webapp:dev": "pnpm run dev --filter=webapp",
+    "webapp:build": "pnpm run build --filter=webapp",
+    "webapp:start": "pnpm run start --filter=webapp"
   },
   "devDependencies": {
     "prettier": "^3.0.0"

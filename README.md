@@ -28,7 +28,52 @@ uv pip install --no-verify-ssl -e ./packages/python
 
 # Usage
 from opcclient import OPCClient
+```
 
+### Node.js OPC Client
+
+A Node.js client for OPC UA communication.
+
+```bash
+# Installation (if using outside the monorepo)
+npm install opcclient
+
+# Usage
+const { OPCClient } = require('opcclient');
+// or
+import { OPCClient } from 'opcclient';
+```
+
+### Web Application
+
+A Next.js web application for browsing OPC UA servers.
+
+```bash
+# Start the development server
+pnpm run webapp:dev
+
+# Build for production
+pnpm run webapp:build
+
+# Start the production server
+pnpm run webapp:start
+
+# Rebuild the web application (reinstalls dependencies and builds)
+pnpm run webapp:rebuild
+```
+
+The web application allows you to:
+- Connect to OPC UA servers with username/password or anonymous authentication
+- View server object models in an interactive tree view
+- Search and filter nodes in the object model tree
+- Save and manage multiple server connections
+- Automatic dark/light theme support with manual toggle
+- Real-time connection status indicators
+- Responsive design optimized for all device sizes
+
+Access the application at [http://localhost:3000](http://localhost:3000) after starting the server.
+
+```bash
 # Create a client
 client = OPCClient(server_url="opc.tcp://server:4840")
 
@@ -58,6 +103,10 @@ await client.connect();
 ```
 
 [View Node.js package](./packages/nodejs/README.md)
+
+### Web Application
+
+[View Web Application](./packages/webapp/README.md)
 
 ## Examples
 
@@ -101,6 +150,28 @@ pnpm install
 pnpm run build
 pnpm test
 ```
+
+### Web Application
+
+```bash
+# From monorepo root
+pnpm run webapp:dev
+
+# Or from webapp directory
+cd packages/webapp
+pnpm install
+pnpm run dev
+```
+
+#### Web Application Tech Stack
+
+- **Frontend Framework**: Next.js 15+ with React 19
+- **Styling**: Tailwind CSS with custom UI components
+- **State Management**: React Context API
+- **Form Handling**: React Hook Form with Zod validation
+- **UI Components**: Custom components with Radix UI primitives
+- **Icons**: Lucide React
+- **OPC Connection**: Uses the Node.js OPC client library
 
 ## License
 

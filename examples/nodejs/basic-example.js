@@ -2,7 +2,7 @@ const { OPCClient } = require('../../packages/nodejs/dist');
 
 async function main() {
   // Create a client
-  const client = new OPCClient({ endpointUrl: 'opc.tcp://localhost:4840' });
+  const client = new OPCClient({ endpointUrl: 'opc.tcp://localhost:4841' });
 
   try {
     // Connect to the server

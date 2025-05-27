@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #171717;
+    
+    --primary: #2563eb;
+    --primary-foreground: #ffffff;
+    
+    --secondary: #f3f4f6;
+    --secondary-foreground: #1f2937;
+    
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    
+    --muted: #f3f4f6;
+    --muted-foreground: #6b7280;
+    
+    --accent: #f3f4f6;
+    --accent-foreground: #1f2937;
+    
+    --border: #e5e7eb;
+    --input: #e5e7eb;
+    --ring: #2563eb;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    
+    --primary: #3b82f6;
+    --primary-foreground: #ffffff;
+    
+    --secondary: #1f2937;
+    --secondary-foreground: #f3f4f6;
+    
+    --muted: #1f2937;
+    --muted-foreground: #9ca3af;
+    
+    --accent: #1f2937;
+    --accent-foreground: #f3f4f6;
+    
+    --border: #374151;
+    --input: #374151;
+    --ring: #3b82f6;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+::selection {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}

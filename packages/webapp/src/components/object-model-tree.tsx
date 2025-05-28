@@ -1,14 +1,18 @@
 import { useState, useMemo, useCallback } from 'react'
 import { ServerNode } from '@/types/server'
-import { ChevronRight, ChevronDown, File, Folder, Database, Search } from 'lucide-react'
+import { ChevronRight, ChevronDown, File, Folder, Database, Search, RefreshCw } from 'lucide-react'
 import { SearchInput } from '@/components/search-input'
+import { OPCServerManager } from '@/lib/opc-server-manager'
+import { toast } from 'react-toastify'
 
 interface ObjectModelTreeProps {
   nodes: ServerNode[]
   serverName: string
+  serverId: string
+  opcServerManager: OPCServerManager
 }
 
-export function ObjectModelTree({ nodes, serverName }: ObjectModelTreeProps) {
+export function ObjectModelTree({ nodes, serverName, serverId, opcServerManager }: ObjectModelTreeProps) {
   const [searchQuery, setSearchQuery] = useState('')
   
   // Filter nodes based on search query
@@ -101,7 +105,9 @@ export function ObjectModelTree({ nodes, serverName }: ObjectModelTreeProps) {
                   key={node.nodeId} 
                   node={node} 
                   level={0}
-                  isSearching={!!searchQuery} 
+                  isSearching={!!searchQuery}
+                  serverId={serverId}
+                  opcServerManager={opcServerManager}
                 />
               ))}
             </div>
@@ -116,11 +122,44 @@ interface TreeNodeProps {
   node: ServerNode
   level: number
   isSearching?: boolean
+  serverId: string
+  opcServerManager: OPCServerManager
 }
 
-function TreeNode({ node, level, isSearching = false }: TreeNodeProps) {
+function TreeNode({ node, level, isSearching = false, serverId, opcServerManager }: TreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(isSearching)
-  const hasChildren = node.children && node.children.length > 0
+  const [isLoading, setIsLoading] = useState(false)
+  const [children, setChildren] = useState<ServerNode[]>(node.children || [])
+  const [hasLoadedChildren, setHasLoadedChildren] = useState(false)
+  
+  // Check if node might have children (for lazy loading)
+  const mightHaveChildren = 
+    (node.children && node.children.length > 0) || // Has loaded children
+    (!hasLoadedChildren && (node.nodeClass === 'Object' || node.nodeClass === 'ObjectType' || node.nodeClass === 'Folder'));
+
+  // Handle node expansion with lazy loading
+  const handleExpand = async () => {
+    // Toggle expansion
+    const willExpand = !isExpanded;
+    setIsExpanded(willExpand);
+    
+    // If expanding and children haven't been loaded yet, load them
+    if (willExpand && !hasLoadedChildren && children.length === 0) {
+      setIsLoading(true);
+      
+      try {
+        // Load children from the server
+        const loadedChildren = await opcServerManager.browseNode(serverId, node.nodeId);
+        setChildren(loadedChildren);
+        setHasLoadedChildren(true);
+      } catch (error) {
+        console.error(`Error loading children for node ${node.nodeId}:`, error);
+        toast.error(`Failed to load child nodes: ${(error as Error).message}`);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
   
   // Determine icon and color based on node class
   const getNodeIcon = () => {
@@ -140,22 +179,26 @@ function TreeNode({ node, level, isSearching = false }: TreeNodeProps) {
         className={`flex items-center py-1.5 px-2 rounded transition-colors
                    hover:bg-slate-100 dark:hover:bg-slate-800
                    ${level === 0 ? 'font-medium' : ''}
-                   ${hasChildren ? 'cursor-pointer' : ''}`}
+                   ${mightHaveChildren ? 'cursor-pointer' : ''}`}
         style={{ paddingLeft: `${level * 16 + 4}px` }}
-        onClick={() => hasChildren && setIsExpanded(!isExpanded)}
+        onClick={() => mightHaveChildren && handleExpand()}
       >
-        {hasChildren ? (
+        {mightHaveChildren ? (
           <button
             onClick={(e) => {
               e.stopPropagation()
-              setIsExpanded(!isExpanded)
+              handleExpand()
             }}
             className="p-1 rounded transition-colors hover:bg-slate-200 dark:hover:bg-slate-700 mr-1"
+            disabled={isLoading}
           >
-            {isExpanded ? 
-              <ChevronDown className="h-4 w-4 text-gray-500 dark:text-gray-400" /> : 
+            {isLoading ? (
+              <RefreshCw className="h-4 w-4 text-gray-500 dark:text-gray-400 animate-spin" />
+            ) : isExpanded ? (
+              <ChevronDown className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+            ) : (
               <ChevronRight className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-            }
+            )}
           </button>
         ) : (
           <span className="w-6 mr-1">
@@ -179,16 +222,34 @@ function TreeNode({ node, level, isSearching = false }: TreeNodeProps) {
         )}
       </div>
       
-      {isExpanded && node.children && (
+      {isExpanded && (
         <div>
-          {node.children.map((childNode) => (
-            <TreeNode 
-              key={childNode.nodeId} 
-              node={childNode} 
-              level={level + 1}
-              isSearching={isSearching}
-            />
-          ))}
+          {isLoading && children.length === 0 ? (
+            <div 
+              className="flex items-center py-1.5 px-2 text-gray-500 dark:text-gray-400 text-sm italic"
+              style={{ paddingLeft: `${(level + 1) * 16 + 4}px` }}
+            >
+              Loading...
+            </div>
+          ) : children.length > 0 ? (
+            children.map((childNode) => (
+              <TreeNode 
+                key={childNode.nodeId} 
+                node={childNode} 
+                level={level + 1}
+                isSearching={isSearching}
+                serverId={serverId}
+                opcServerManager={opcServerManager}
+              />
+            ))
+          ) : hasLoadedChildren ? (
+            <div 
+              className="flex items-center py-1.5 px-2 text-gray-500 dark:text-gray-400 text-sm italic"
+              style={{ paddingLeft: `${(level + 1) * 16 + 4}px` }}
+            >
+              No child nodes
+            </div>
+          ) : null}
         </div>
       )}
     </div>

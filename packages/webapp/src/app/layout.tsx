@@ -24,6 +24,16 @@ export default function RootLayout({
                 if (prefersDark) {
                   document.documentElement.classList.add('dark');
                 }
+                
+                // Add global click tracking to help debug
+                document.addEventListener('DOMContentLoaded', function() {
+                  document.addEventListener('click', function(event) {
+                    console.log('Click detected on:', event.target);
+                  });
+                  
+                  // Check for pointer events issues
+                  console.log('Debug script loaded and running');
+                });
               })();
             `,
           }}

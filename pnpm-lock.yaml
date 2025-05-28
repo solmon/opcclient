@@ -72,6 +72,9 @@ importers:
       next:
         specifier: 15.3.2
         version: 15.3.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      node-opcua:
+        specifier: ^2.90.0
+        version: 2.153.0
       opcclient:
         specifier: workspace:*
         version: link:../nodejs

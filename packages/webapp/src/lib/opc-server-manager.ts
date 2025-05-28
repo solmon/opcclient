@@ -1,5 +1,9 @@
-import { OPCClient } from '@/lib/opc-client-mock'
+import { OPCClient } from '@/lib/opc-client'
 import { Server, ServerObjectModel, ServerNode } from '@/types/server'
+import { createLogger } from '@/lib/logger'
+
+// Create a logger specifically for OPC server operations
+const logger = createLogger('OPCServerManager')
 
 /**
  * OPC server connection manager
@@ -13,6 +17,7 @@ export class OPCServerManager {
    */
   async connectToServer(server: Server): Promise<void> {
     try {
+      logger.info(`Connecting with server ${server.name}`)
       // Update connection status to indicate we're trying to connect
       this.connectionStatus.set(server.id, 'disconnected')
       
@@ -29,9 +34,9 @@ export class OPCServerManager {
       this.clients.set(server.id, client)
       this.connectionStatus.set(server.id, 'connected')
       
-      console.log(`Successfully connected to server ${server.name}`)
+      logger.info(`Successfully connected to server ${server.name}`)
     } catch (error) {
-      console.error(`Error connecting to server ${server.name}:`, error)
+      logger.error(`Error connecting to server ${server.name}:`, error)
       this.connectionStatus.set(server.id, 'error')
       throw error
     }
@@ -71,12 +76,13 @@ export class OPCServerManager {
         throw new Error(`Client not found for server ${server.name}`)
       }
 
-      // For demonstration purposes, we're creating a simulated object model
-      // In a real implementation, this would query the actual OPC server
-      // using the browse functionality of the client
+      // Browse the root Objects folder (i=84) using the actual client implementation
+      logger.info(`Browsing root Objects folder for server ${server.name}`);
       
-      // TODO: Replace with actual browse implementation using the client
-      const rootNodes = await this.simulateBrowse(client)
+      // Get root nodes
+      const rootNodes = await this.browseNodes(client, 'i=84', 1);
+      
+      logger.info(`Retrieved ${rootNodes.length} root nodes from server ${server.name}`);
       
       return {
         serverId: server.id,
@@ -84,161 +90,62 @@ export class OPCServerManager {
         rootNodes
       }
     } catch (error) {
-      console.error(`Error getting object model for server ${server.name}:`, error)
+      logger.error(`Error getting object model for server ${server.name}:`, error)
       throw error
     }
   }
 
   /**
-   * Browse an OPC server
-   * In a production environment, this would use the OPC Client's browse functionality
-   * For now, we're implementing a more detailed simulation to demonstrate the UI
+   * Browse nodes recursively up to specified depth
    */
-  private async simulateBrowse(client: OPCClient): Promise<ServerNode[]> {
-    // In a real implementation, we would use:
-    // const rootNodes = await client.browse('i=85');
-    // And then process the results
-    
-    // Enhanced simulation with more realistic nodes
-    return [
-      {
-        nodeId: 'i=85',
-        browseName: 'Objects',
-        displayName: 'Objects',
-        nodeClass: 'Object',
-        children: [
-          {
-            nodeId: 'i=2253',
-            browseName: 'Server',
-            displayName: 'Server',
-            nodeClass: 'Object',
-            children: [
-              {
-                nodeId: 'i=2254',
-                browseName: 'ServerStatus',
-                displayName: 'ServerStatus',
-                nodeClass: 'Variable',
-                description: 'The current status of the server',
-              },
-              {
-                nodeId: 'i=2255',
-                browseName: 'State',
-                displayName: 'State',
-                nodeClass: 'Variable',
-              },
-              {
-                nodeId: 'i=2256',
-                browseName: 'BuildInfo',
-                displayName: 'BuildInfo',
-                nodeClass: 'Object',
-                children: [
-                  {
-                    nodeId: 'i=2257',
-                    browseName: 'ProductName',
-                    displayName: 'ProductName',
-                    nodeClass: 'Variable',
-                  },
-                  {
-                    nodeId: 'i=2258',
-                    browseName: 'ManufacturerName',
-                    displayName: 'ManufacturerName',
-                    nodeClass: 'Variable',
-                  }
-                ]
-              },
-            ]
-          },
-          {
-            nodeId: 'ns=2;s=DeviceSet',
-            browseName: 'DeviceSet',
-            displayName: 'Device Set',
-            nodeClass: 'Object',
-            children: [
-              {
-                nodeId: 'ns=2;s=Device1',
-                browseName: 'Device1',
-                displayName: 'Temperature Controller',
-                nodeClass: 'Object',
-                children: [
-                  {
-                    nodeId: 'ns=2;s=Device1.Tag1',
-                    browseName: 'Tag1',
-                    displayName: 'Temperature',
-                    nodeClass: 'Variable',
-                    description: 'Current temperature value',
-                  },
-                  {
-                    nodeId: 'ns=2;s=Device1.Tag2',
-                    browseName: 'Tag2',
-                    displayName: 'SetPoint',
-                    nodeClass: 'Variable',
-                    description: 'Target temperature value',
-                  },
-                  {
-                    nodeId: 'ns=2;s=Device1.Status',
-                    browseName: 'Status',
-                    displayName: 'Status',
-                    nodeClass: 'Variable',
-                    description: 'Controller status',
-                  }
-                ]
-              },
-              {
-                nodeId: 'ns=2;s=Device2',
-                browseName: 'Device2',
-                displayName: 'Flow Meter',
-                nodeClass: 'Object',
-                children: [
-                  {
-                    nodeId: 'ns=2;s=Device2.FlowRate',
-                    browseName: 'FlowRate',
-                    displayName: 'Flow Rate',
-                    nodeClass: 'Variable',
-                    description: 'Current flow rate',
-                  },
-                  {
-                    nodeId: 'ns=2;s=Device2.TotalFlow',
-                    browseName: 'TotalFlow',
-                    displayName: 'Total Flow',
-                    nodeClass: 'Variable',
-                    description: 'Accumulated flow value',
-                  },
-                  {
-                    nodeId: 'ns=2;s=Device2.Status',
-                    browseName: 'Status',
-                    displayName: 'Status',
-                    nodeClass: 'Variable',
-                    description: 'Flow meter status',
-                  }
-                ]
-              },
-              {
-                nodeId: 'ns=2;s=Device3',
-                browseName: 'Device3',
-                displayName: 'Pressure Sensor',
-                nodeClass: 'Object',
-                children: [
-                  {
-                    nodeId: 'ns=2;s=Device3.Pressure',
-                    browseName: 'Pressure',
-                    displayName: 'Pressure Value',
-                    nodeClass: 'Variable',
-                    description: 'Current pressure reading',
-                  },
-                  {
-                    nodeId: 'ns=2;s=Device3.HighLimit',
-                    browseName: 'HighLimit',
-                    displayName: 'High Pressure Limit',
-                    nodeClass: 'Variable',
-                    description: 'High pressure threshold',
-                  }
-                ]
-              }
-            ]
+  private async browseNodes(client: OPCClient, nodeId: string, maxDepth: number, currentDepth: number = 0): Promise<ServerNode[]> {
+    try {
+      const nodes = await client.browseNode(nodeId);
+      
+      // Process the nodes into our expected format
+      const serverNodes: ServerNode[] = await Promise.all(
+        nodes.map(async (node: any): Promise<ServerNode> => {
+          // Only browse children if we haven't reached the max depth
+          let children: ServerNode[] = [];
+          
+          // Only browse children for objects, not variables or other node types
+          const shouldBrowseChildren = 
+            currentDepth < maxDepth && 
+            (node.nodeClass === 'Object' || node.nodeClass === 'ObjectType' || node.nodeClass === 'Folder');
+            
+          if (shouldBrowseChildren) {
+            logger.debug(`Browsing children of node ${node.nodeId} (${node.browseName})`);
+            children = await this.browseNodes(client, node.nodeId, maxDepth, currentDepth + 1);
           }
-        ]
-      }
-    ]
+          
+          return {
+            nodeId: node.nodeId,
+            browseName: node.browseName,
+            displayName: node.displayName,
+            description: node.description || '',
+            nodeClass: node.nodeClass,
+            children
+          };
+        })
+      );
+      
+      return serverNodes;
+    } catch (error) {
+      logger.error(`Error browsing node ${nodeId}: ${error}`);
+      return [];
+    }
+  }
+
+  /**
+   * Browse a specific node to get its children
+   */
+  async browseNode(serverId: string, nodeId: string): Promise<ServerNode[]> {
+    const client = this.clients.get(serverId);
+    if (!client) {
+      throw new Error(`No client found for server ${serverId}`);
+    }
+    
+    return this.browseNodes(client, nodeId, 1);
   }
 
   /**

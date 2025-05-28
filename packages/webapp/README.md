@@ -5,13 +5,23 @@ This is a Next.js web application that provides a graphical interface to connect
 ## Features
 
 - Connect to OPC UA servers with username/password or anonymous authentication
-- View server object models in an interactive tree view
+- View server object models in an interactive tree view with lazy loading support
 - Search and filter nodes in the object model tree
 - Automatic dark/light theme support with manual toggle
 - Save and manage multiple server connections
 - Real-time connection status indicators
 - Responsive design optimized for all device sizes
 - User-friendly interface built with React and Tailwind CSS
+- Complete OPC UA integration using node-opcua library
+
+## OPC UA Implementation
+
+This application includes a real OPC UA client implementation (not a mock). See [OPC_CLIENT.md](./OPC_CLIENT.md) for details on:
+
+- Architecture and implementation details
+- Testing your OPC UA connection
+- Setting up test servers
+- Security considerations
 
 ## Getting Started
 

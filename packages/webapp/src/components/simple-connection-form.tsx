@@ -7,60 +7,40 @@ import { toast } from 'react-toastify'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 
 const serverFormSchema = z.object({
   name: z.string().min(1, 'Server name is required'),
   endpointUrl: z.string().min(1, 'Endpoint URL is required'),
   useAnonymous: z.boolean().default(false),
   username: z.string().optional()
-    .refine((val, ctx) => {
-      // Only validate if not using anonymous authentication
-      if (ctx.path && ctx.path.length > 0 && !ctx.data.useAnonymous) {
-        return val !== undefined && val.length > 0;
-      }
-      return true;
-    }, { 
+    .refine(val => val !== undefined && val.length > 0 || undefined, { 
       message: "Username is required when not using anonymous authentication" 
     }),
   password: z.string().optional()
-    .refine((val, ctx) => {
-      // Only validate if not using anonymous authentication
-      if (ctx.path && ctx.path.length > 0 && !ctx.data.useAnonymous) {
-        return val !== undefined && val.length > 0;
-      }
-      return true;
-    }, { 
+    .refine(val => val !== undefined && val.length > 0 || undefined, { 
       message: "Password is required when not using anonymous authentication" 
     }),
 })
 
 type ServerFormValues = z.infer<typeof serverFormSchema>
 
-interface ServerConnectionFormProps {
+interface SimpleConnectionFormProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (data: ServerFormValues) => void
 }
 
-export function ServerConnectionForm({
+export function SimpleConnectionForm({
   isOpen,
   onClose,
   onSubmit,
-}: ServerConnectionFormProps) {
+}: SimpleConnectionFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [useAnonymous, setUseAnonymous] = useState(false)
   
   // Debug logging for isOpen prop
   useEffect(() => {
-    console.log('ServerConnectionForm isOpen prop:', isOpen)
+    console.log('SimpleConnectionForm isOpen prop:', isOpen)
   }, [isOpen])
   
   const form = useForm<ServerFormValues>({
@@ -75,28 +55,17 @@ export function ServerConnectionForm({
   })
 
   const handleSubmit = async (data: ServerFormValues) => {
-    console.log('Form handleSubmit called with data:', data);
     try {
-      // When using anonymous auth, make sure credentials are not required
-      const formData: ServerFormValues = {
-        ...data,
-        // Clear username and password if using anonymous authentication
-        username: data.useAnonymous ? undefined : data.username,
-        password: data.useAnonymous ? undefined : data.password,
-      };
-      
-      console.info('connecting to OPC server:', formData);
+      console.info('connecting to OPC server:',data);
       setIsSubmitting(true)
-      await onSubmit(formData)
+      await onSubmit(data)
       form.reset()
       onClose()
     } catch (error: any) {
       console.error('Error connecting to OPC server:', error)
       
-      // Extract meaningful error message if available
       const errorMessage = error?.message || 'Failed to connect to OPC server';
       
-      // Show more specific error message
       if (errorMessage.includes('Authentication failed')) {
         toast.error('Authentication failed: Invalid username or password');
       } else if (errorMessage.includes('Connection refused')) {
@@ -109,29 +78,27 @@ export function ServerConnectionForm({
     }
   }
 
-  // Add debug logging for rendering
-  console.log('ServerConnectionForm rendering, isOpen:', isOpen)
-  
-  // Add debug logging for Dialog open state
-  useEffect(() => {
-    console.log('Dialog open state:', isOpen)
-  }, [isOpen])
-  
+  if (!isOpen) {
+    return null;
+  }
+
   return (
-    <Dialog 
-      open={isOpen} 
-      onOpenChange={(open) => {
-        console.log('Dialog onOpenChange called with value:', open)
-        onClose()
-      }}
-    >
-      <DialogContent className="sm:max-w-[425px] dark:bg-slate-900 dark:border-slate-700">
-        <DialogHeader>
-          <DialogTitle className="dark:text-white">Add OPC Server Connection</DialogTitle>
-          <DialogDescription className="dark:text-gray-400">
-            Enter the details of your OPC UA server connection.
-          </DialogDescription>
-        </DialogHeader>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-lg shadow-lg w-full max-w-md">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold dark:text-white">Add OPC Server Connection</h2>
+          <button 
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            ✕
+          </button>
+        </div>
+        
+        <p className="text-gray-500 dark:text-gray-400 mb-4">
+          Enter the details of your OPC UA server connection.
+        </p>
+        
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
@@ -150,6 +117,7 @@ export function ServerConnectionForm({
                 </p>
               )}
             </div>
+            
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="endpointUrl" className="text-right dark:text-white">
                 Endpoint URL
@@ -207,6 +175,7 @@ export function ServerConnectionForm({
                     </p>
                   )}
                 </div>
+                
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="password" className="text-right dark:text-white">
                     Password
@@ -228,7 +197,8 @@ export function ServerConnectionForm({
               </>
             )}
           </div>
-          <DialogFooter>
+          
+          <div className="flex justify-end space-x-2 mt-6">
             <Button
               type="button" 
               variant="outline" 
@@ -240,9 +210,9 @@ export function ServerConnectionForm({
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? 'Connecting...' : 'Connect'}
             </Button>
-          </DialogFooter>
+          </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   )
 }

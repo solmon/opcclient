@@ -10,12 +10,20 @@ import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('OPC-API');
 
-// Store active sessions
-const activeSessions: Map<string, {
-  client: OPCUAClient,
-  session: ClientSession,
-  endpointUrl: string
-}> = new Map();
+// Reference to global active sessions
+declare global {
+  var activeSessions: Map<string, {
+    client: OPCUAClient,
+    session: ClientSession,
+    endpointUrl: string
+  }> | undefined;
+}
+
+if (!global.activeSessions) {
+  global.activeSessions = new Map();
+}
+
+const activeSessions = global.activeSessions;
 
 export async function POST(request: Request) {
   try {
